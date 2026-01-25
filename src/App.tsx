@@ -166,7 +166,7 @@ function App() {
         <header className="nav">
           <Link to="/" className="nav__brand">
             Aaron Chakerian
-            <span className="nav__loading">...</span>
+            <span className="nav__dots" aria-hidden />
           </Link>
           <nav className="nav__links">
             <NavLink to="/career">Career</NavLink>
