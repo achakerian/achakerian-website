@@ -9,9 +9,13 @@ function Home() {
   }, [])
 
   const slides = [
-    { lines: ['Hello', "I'm Aaron"] },
-    { lines: ["I believe people don't buy what you do", 'They buy why you do it'] },
-    { lines: ['We develop systems that matter', 'Engineer - Educator - Developer'] },
+    { lines: ['Welcome', "I'm Aaron"] },
+    { lines: ['Primary focus on increasing quality of life'] },
+    { lines: ['Through human centered design and systems'] },
+    { lines: ['Collaborative initiatives solving real-world challenges'] },
+    { lines: ['Empowering learners to shape their futures'] },
+    { lines: ['Human oriented research, education & technology,'] },
+    { lines: ['Aaron Chakerian', 'Engineer - Educator - Developer'] },
   ]
 
   const [index, setIndex] = useState(0)
@@ -21,8 +25,8 @@ function Home() {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (reduceMotion.matches) return
 
-    const holdMs = 2600
-    const fadeMs = 900
+    const holdMs = 3200
+    const fadeMs = 1100
     let t1: number | undefined
     let t2: number | undefined
 

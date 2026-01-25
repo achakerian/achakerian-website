@@ -1,19 +1,31 @@
 import { useEffect } from 'react'
-import { HashRouter as Router, Routes, Route, Link, NavLink } from 'react-router-dom'
+import { HashRouter as Router, Routes, Route, Link, NavLink, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Career from './pages/Career'
 import Research from './pages/Research'
 import Education from './pages/Education'
 import Projects from './pages/Projects'
 
-function App() {
+function MotionBackgroundController() {
+  const location = useLocation()
+
   useEffect(() => {
+    const isHome = location.pathname === '/'
     const root = document.documentElement
     let raf = 0
+    const getAnchorY = () => {
+      const nav = document.querySelector('.nav') as HTMLElement | null
+      if (!nav) return 220
+      const rect = nav.getBoundingClientRect()
+      // Keep the vertical focus around the nav + page index area.
+      return Math.max(140, rect.bottom + 90)
+    }
+
+    let anchorY = getAnchorY()
     let x = window.innerWidth * 0.5
-    let y = window.innerHeight * 0.5
+    let y = isHome ? window.innerHeight * 0.5 : anchorY
     let tx = x
-    let ty = y
+    let ty = isHome ? y : anchorY
     let vx = 0
     let vy = 0
     let animating = false
@@ -34,8 +46,12 @@ function App() {
       const hueA = Math.round(115 + nx * 60)
       const hueB = Math.round(130 + ny * 40)
 
-      // Batch all CSS updates into a single style recalculation
-      root.style.cssText += `--mx:${mx}%;--my:${my}%;--mx2:${mx2}%;--my2:${my2}%;--h1:${hueA};--h2:${hueB};`
+      root.style.setProperty('--mx', `${mx}%`)
+      root.style.setProperty('--my', `${my}%`)
+      root.style.setProperty('--mx2', `${mx2}%`)
+      root.style.setProperty('--my2', `${my2}%`)
+      root.style.setProperty('--h1', `${hueA}`)
+      root.style.setProperty('--h2', `${hueB}`)
     }
 
     const tick = () => {
@@ -44,8 +60,14 @@ function App() {
       lastTime = now
       const speed = Math.abs(vx) + Math.abs(vy)
       const idle = now - lastMove > 2000 && speed < 0.35
+      if (!isHome) {
+        anchorY = getAnchorY()
+        ty = anchorY
+      }
+
+      const centerY = isHome ? window.innerHeight * 0.5 : anchorY
       const targetX = idle ? window.innerWidth * 0.5 : tx
-      const targetY = idle ? window.innerHeight * 0.5 : ty
+      const targetY = idle ? centerY : (isHome ? ty : anchorY)
       const dx = targetX - x
       const dy = targetY - y
       const stiffness = idle ? 0.12 : 0.5
@@ -75,7 +97,11 @@ function App() {
 
     const onMove = (event: PointerEvent) => {
       tx = event.clientX
-      ty = event.clientY
+      if (isHome) {
+        ty = event.clientY
+      } else {
+        ty = anchorY
+      }
       lastMove = performance.now()
       if (!animating) {
         animating = true
@@ -86,7 +112,7 @@ function App() {
 
     const onLeave = () => {
       tx = window.innerWidth * 0.5
-      ty = window.innerHeight * 0.5
+      ty = isHome ? window.innerHeight * 0.5 : anchorY
       lastMove = performance.now()
       if (!animating) {
         animating = true
@@ -94,31 +120,46 @@ function App() {
       }
     }
 
-    const onResize = () => update(x, y)
+    const onResize = () => {
+      anchorY = getAnchorY()
+      update(x, isHome ? y : anchorY)
+    }
+
+    const onScroll = () => {
+      if (isHome) return
+      anchorY = getAnchorY()
+    }
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
     if (reduceMotion.matches) {
-      update(x, y)
+      update(x, isHome ? y : anchorY)
       return
     }
 
     window.addEventListener('pointermove', onMove)
     window.addEventListener('pointerleave', onLeave)
     window.addEventListener('resize', onResize)
-    update(x, y)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    update(x, isHome ? y : anchorY)
 
     return () => {
       window.removeEventListener('pointermove', onMove)
       window.removeEventListener('pointerleave', onLeave)
       window.removeEventListener('resize', onResize)
+      window.removeEventListener('scroll', onScroll)
       if (raf) {
         window.cancelAnimationFrame(raf)
       }
     }
-  }, [])
+  }, [location.pathname])
 
+  return null
+}
+
+function App() {
   return (
     <Router>
+      <MotionBackgroundController />
       <div className="page">
         <div className="interactive-bg" aria-hidden />
         <div className="interactive-noise" aria-hidden />
