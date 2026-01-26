@@ -68,7 +68,25 @@ body.is-home {
 }
 
 body.is-home .landing {
-  min-height: calc(100vh - 160px);
+  min-height: 100vh;
+}
+
+body.is-home .page {
+  height: 100vh;
+  overflow: hidden;
+}
+
+body.is-home .landing__content {
+  height: calc(100vh - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+body.is-home .ai-screen {
+  padding-top: 0;
 }
 
 h1, h2, h3, h4, h5, h6, p, a, span, div {
@@ -196,7 +214,7 @@ a {
   width: 0;
   display: inline-block;
   border-right: 2px solid var(--accent);
-  animation: typing-cycle 11.4s steps(16) infinite, nav-caret 11.4s step-start infinite;
+  animation: typing-cycle 11.4s steps(16) infinite, nav-caret 11.4s steps(1) infinite;
 }
 
 .nav__brand:hover {
@@ -240,13 +258,8 @@ a {
 }
 
 @keyframes nav-caret {
-  0% { border-color: var(--accent); }
-  3.5% { border-color: transparent; }
-  7% { border-color: var(--accent); }
-  10.5% { border-color: transparent; }
-  14% { border-color: var(--accent); }
-  17.5% { border-color: transparent; }
-  18%, 100% { border-color: transparent; }
+  0%, 16% { border-color: var(--accent); }
+  16.1%, 100% { border-color: transparent; }
 }
 
 .nav__dots::after {
